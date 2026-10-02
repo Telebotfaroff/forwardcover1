@@ -12,6 +12,15 @@ export default {
         return new Response("OK");
       }
 
+      if (message.text === "/start") {
+        await sendMessage(
+          env.BOT_TOKEN,
+          message.chat.id,
+          "👋 Hello! Send me a message and I will forward it back to you."
+        );
+        return new Response("OK");
+      }
+
       await copyMessage(
         env.BOT_TOKEN,
         message.chat.id,
@@ -26,6 +35,24 @@ export default {
     }
   }
 };
+
+async function sendMessage(token, chatId, text) {
+  const response = await fetch(
+    `https://api.telegram.org/bot${token}/sendMessage`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text
+      })
+    }
+  );
+
+  return response.json();
+}
 
 async function copyMessage(token, chatId, messageId) {
   const response = await fetch(
