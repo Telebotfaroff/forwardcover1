@@ -6,43 +6,22 @@ export default {
 
     try {
       const update = await request.json();
-      console.log("Telegram update:", JSON.stringify(update));
-
       const message = update.message;
 
       if (!message) {
-        console.log("No message in update");
         return new Response("OK");
       }
 
-      const result = await copyMessage(
+      await copyMessage(
         env.BOT_TOKEN,
         message.chat.id,
         message.message_id
       );
 
-      console.log("Telegram copyMessage response:", JSON.stringify(result));
-
-      if (!result.ok) {
-        return new Response(JSON.stringify({
-          ok: false,
-          telegram_error: result
-        }), {
-          status: 500,
-          headers: { "Content-Type": "application/json" }
-        });
-      }
-
       return new Response("OK");
-    } catch (error) {
-      console.log("Worker error:", error?.stack || String(error));
-
-      return new Response(JSON.stringify({
-        ok: false,
-        error: String(error)
-      }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" }
+    } catch {
+      return new Response("Internal Server Error", {
+        status: 500
       });
     }
   }
